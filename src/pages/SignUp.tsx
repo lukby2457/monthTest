@@ -1,32 +1,52 @@
-import React, { useState } from "react";
+import React from "react";
+import AuthForm from "../components/AuthForm";
+import { register } from "../api/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { UserProfile } from "../types/authType";
 
-const SignUp: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Signup = ({ user }: {user: UserProfile | null}) => {
+  const navigate = useNavigate();
 
-  const handleSignUp = () => {
-    // 회원가입 로직 (예: API 호출)
-    alert(`Signed up with Email: ${email}`);
+  // eslint-disable-next-line no-extra-boolean-cast
+  if (!!user) navigate("/profile");
+
+  const handleSignup = async (formData: {
+    id: string;
+    password: string;
+    nickname: string;
+  }) => {
+    try {
+      const data = await register(formData);
+
+      if (data.success) navigate("/login");
+      else alert("Signup Failed");
+    } catch (error) {
+      alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+      console.log(error);
+    }
   };
 
   return (
-    <div>
-      <h1>Sign Up</h1>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-      />
-      <button onClick={handleSignUp}>Sign Up</button>
+    <div className="flex justify-center">
+      <div className="p-5 m-5 rounded-lg shadow-lg w-100">
+        <h1 className="mb-6 text-3xl font-bold text-center text-primary-color">
+          회원가입
+        </h1>
+        <AuthForm mode="signup" onSubmit={handleSignup} />
+        <div>
+          <p>
+            이미 계정이 있으신가요?{" "}
+            <Link
+              to="/login"
+              className="text-orange-400 hover:text-inherit hover:underline"
+            >
+              로그인
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default SignUp;
+export default Signup;

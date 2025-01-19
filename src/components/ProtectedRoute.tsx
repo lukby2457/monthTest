@@ -1,18 +1,16 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
+import { UserProfile } from "../types/authType";
 
-interface ProtectedRouteProps {
+export const ProtectedRoute = ({
+  user,
+  children,
+}: {
+  user: UserProfile | null;
   children: React.ReactNode;
-}
+}) => {
+  if (!user) return <Navigate to="/login" replace />;
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem("token"); // 인증 여부 확인 (예: 토큰 유무 확인)
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
+  return children;
 };
 
 export default ProtectedRoute;
